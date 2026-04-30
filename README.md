@@ -1,73 +1,269 @@
-Data Science Salary Estimator: Project Overview
-Created a tool that estimates data science salaries (MAE ~ $ 11K) to help data scientists negotiate their income when they get a job.
-Scraped over 1000 job descriptions from glassdoor using python and selenium
-Engineered features from the text of each job description to quantify the value companies put on python, excel, aws, and spark.
-Optimized Linear, Lasso, and Random Forest Regressors using GridsearchCV to reach the best model.
-Built a client facing API using flask
-Code and Resources Used
-Python Version: 3.7
-Packages: pandas, numpy, sklearn, matplotlib, seaborn, selenium, flask, json, pickle
-For Web Framework Requirements: pip install -r requirements.txt
-Flask Productionization: https://towardsdatascience.com/productionize-a-machine-learning-model-with-flask-and-heroku-8201260503d2
+# 💼 Data Science Salary Estimator
 
-YouTube Project Walk-Through
-https://www.youtube.com/playlist?list=PL2zq7klxX5ASFejJj80ob9ZAnBHdz5O1t
+## 📌 Project Overview
 
-Web Scraping
-Tweaked the web scraper github repo (above) to scrape 1000 job postings from glassdoor.com. With each job, we got the following:
+This project builds a machine learning model to estimate data science salaries based on job listings. The goal is to help data professionals better understand and negotiate their compensation.
 
-Job title
-Salary Estimate
-Job Description
-Rating
-Company
-Location
-Company Headquarters
-Company Size
-Company Founded Date
-Type of Ownership
-Industry
-Sector
-Revenue
-Competitors
-Data Cleaning
-After scraping the data, I needed to clean it up so that it was usable for our model. I made the following changes and created the following variables:
+* 📊 Achieved **Mean Absolute Error (MAE) ≈ $11K**
+* 🧠 Built multiple ML models and optimized using GridSearchCV
+* 🔄 Implemented a **scikit-learn Pipeline** for end-to-end preprocessing and prediction
+* 🌐 Deployed using a **Flask API**
 
-Parsed numeric data out of salary
-Made columns for employer provided salary and hourly wages
-Removed rows without salary
-Parsed rating out of company text
-Made a new column for company state
-Added a column for if the job was at the company’s headquarters
-Transformed founded date into age of company
-Made columns for if different skills were listed in the job description:
-Python
-R
-Excel
-AWS
-Spark
-Column for simplified job title and Seniority
-Column for description length
-EDA
-I looked at the distributions of the data and the value counts for the various categorical variables. Below are a few highlights from the pivot tables.
+---
 
-alt text alt text alt text
+## 🚀 Key Features
 
-Model Building
-First, I transformed the categorical variables into dummy variables. I also split the data into train and tests sets with a test size of 20%.
+* Used a **Glassdoor jobs dataset from Kaggle**
+* Performed extensive **data cleaning and feature engineering**
+* Built and optimized:
 
-I tried three different models and evaluated them using Mean Absolute Error. I chose MAE because it is relatively easy to interpret and outliers aren’t particularly bad in for this type of model.
+  * Linear Regression
+  * Lasso Regression
+  * Random Forest (Best Performer)
+* Integrated preprocessing + model using **Pipeline**
+* Developed a **Flask API** for real-time predictions
 
-I tried three different models:
+---
 
-Multiple Linear Regression – Baseline for the model
-Lasso Regression – Because of the sparse data from the many categorical variables, I thought a normalized regression like lasso would be effective.
-Random Forest – Again, with the sparsity associated with the data, I thought that this would be a good fit.
-Model performance
-The Random Forest model far outperformed the other approaches on the test and validation sets.
+## 🛠️ Tech Stack
 
-Random Forest : MAE = 11.22
-Linear Regression: MAE = 18.86
-Ridge Regression: MAE = 19.67
-Productionization
-In this step, I built a flask API endpoint that was hosted on a local webserver by following along with the TDS tutorial in the reference section above. The API endpoint takes in a request with a list of values from a job listing and returns an estimated salary.
+* **Python Version:** 3.10
+* **Libraries:**
+  * pandas
+  * numpy
+  * scikit-learn
+  * matplotlib
+  * seaborn
+  * flask
+  * json
+  * pickle
+
+---
+
+## 📊 Dataset
+
+* Source: **Kaggle (Glassdoor Job Listings Dataset)**
+* Contains job-level data such as:
+
+  * Job Title
+  * Salary Estimate
+  * Job Description
+  * Rating
+  * Company Info (Size, Industry, Sector, Revenue)
+  * Location
+
+---
+
+## 🧹 Data Cleaning & Feature Engineering
+
+Key transformations:
+
+* Extracted numeric salary values
+* Identified hourly vs employer-provided salaries
+* Removed entries without salary data
+* Parsed company ratings
+* Derived company **state** and **headquarter flag**
+* Converted founding year → company age
+* Extracted skill-based features from job descriptions:
+
+  * Python
+  * R
+  * Excel
+  * AWS
+  * Spark
+* Created:
+
+  * Simplified job title
+  * Seniority level
+  * Job description length
+
+---
+
+## 📊 Exploratory Data Analysis (EDA)
+
+* Analyzed distributions of salary and ratings
+* Explored categorical variables using pivot tables
+* Identified trends in:
+
+  * Industry vs salary
+  * Job role vs compensation
+  * Skill demand
+
+---
+
+## 🤖 Model Building
+
+### Data Preparation
+
+* Used **raw dataset (no manual encoding)**
+* Split dataset:
+
+  * **Train: 80%**
+  * **Test: 20%**
+
+---
+
+### 🔄 Pipeline Architecture (Key Enhancement)
+
+To ensure scalability and avoid manual feature handling, a **Pipeline** was implemented:
+
+```python
+Pipeline(
+    steps=[
+        ('preprocessor', ColumnTransformer([
+            ('num', StandardScaler(), num_cols),
+            ('cat', OneHotEncoder(handle_unknown='ignore'), cat_cols),
+            ('bin', 'passthrough', bin_cols)
+        ])),
+        ('model', RandomForestRegressor())
+    ]
+)
+```
+
+👉 Benefits:
+
+* Eliminates need for manual encoding (`get_dummies`)
+* Ensures consistent preprocessing during training and inference
+* Prevents feature mismatch errors
+* Makes deployment cleaner and production-ready
+
+---
+
+### Models Used
+
+| Model             | Purpose               |
+| ----------------- | --------------------- |
+| Linear Regression | Baseline              |
+| Lasso Regression  | Handle sparsity       |
+| Random Forest     | Capture non-linearity |
+
+---
+
+## 📈 Model Performance
+
+| Model             | MAE       |
+| ----------------- | --------- |
+| Random Forest     | **11.22** |
+| Linear Regression | 18.86     |
+| Ridge Regression  | 19.67     |
+
+👉 **Random Forest performed best**
+
+---
+
+## ⚙️ Model Optimization
+
+Used **GridSearchCV** to tune:
+
+* Number of estimators
+* Splitting criteria
+* Feature selection
+
+---
+
+## 🌐 Productionization (Flask API)
+
+A Flask API was built to serve predictions using the trained pipeline.
+
+### 🔄 Pipeline Integration in Deployment
+
+Instead of passing preprocessed features, the API accepts **raw input data**:
+
+```python
+pipeline = pickle.load(open("models/pipeline.pkl", "rb"))
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = request.get_json()
+    df = pd.DataFrame([data])
+    prediction = pipeline.predict(df)[0]
+    return jsonify({'prediction': float(prediction)})
+```
+
+👉 This ensures:
+
+* Same preprocessing as training
+* No manual feature engineering in API
+* Robust and scalable inference
+
+---
+
+### API Endpoint
+
+```http
+POST /predict
+```
+
+### Input Example
+
+```json
+{
+  "Rating": 3.6,
+  "age": 34,
+  "desc_len": 4608,
+  "num_comp": 1,
+  "Size": "1001 to 5000 employees",
+  "Industry": "Biotech & Pharmaceuticals",
+  "Sector": "Healthcare",
+  "Revenue": "$1 to $5 billion (USD)",
+  "job_state": "CA",
+  "python_yn": 1,
+  "spark": 0,
+  "excel": 1
+}
+```
+
+### Output
+
+```json
+{
+  "prediction": 110.795
+}
+```
+
+---
+
+## 📁 Project Structure
+
+```bash
+.
+├── FlaskAPI/
+│   ├── app.py
+│   ├── data_input.py
+│   ├── New.py
+│   ├── models/
+│   │   ├── pipeline.pkl
+│   │   └── model_file.p
+│   ├── wsgi.py
+│   └── venv/
+│
+├── notebooks/
+├── data/
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 🔥 Future Improvements
+
+* Deploy API to cloud (Render / AWS / Railway)
+* Add frontend UI for user input
+* Improve model with XGBoost / LightGBM
+* Add real-time data integration
+
+---
+
+## 👤 Author
+
+**Zaid Shaikh**
+
+---
+
+## ⭐ Acknowledgements
+
+* Kaggle dataset contributors
+* scikit-learn documentation
+* Flask community
+
+---
