@@ -88,6 +88,10 @@ Key transformations:
   * Industry vs salary
   * Job role vs compensation
   * Skill demand
+ 
+<img width="186" height="268" alt="image" src="https://github.com/user-attachments/assets/851036ce-15e1-4dca-8396-dfb8e8063f0c" />
+<img width="390" height="255" alt="image" src="https://github.com/user-attachments/assets/0d950f7c-069e-4566-9a17-0a1d87ef5ffd" />
+<img width="345" height="293" alt="image" src="https://github.com/user-attachments/assets/0c667a97-9b29-49f8-b218-30f2936802db" />
 
 ---
 
